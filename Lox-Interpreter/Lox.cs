@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace Lox_Interpreter;
+﻿namespace Lox_Interpreter;
 
 public class Lox
 {
