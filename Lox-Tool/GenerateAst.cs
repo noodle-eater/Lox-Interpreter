@@ -36,7 +36,7 @@ public class GenerateAst
         DefineVisitor(writer, baseName, types);
 
         writer.AppendLine();
-        writer.AppendLine("    public abstract T Accept<T>(Visitor<T> visitor);");
+        writer.AppendLine("    public abstract T Accept<T>(IVisitor<T> visitor);");
         writer.AppendLine();
         
         // The AST classes.
@@ -53,7 +53,7 @@ public class GenerateAst
 
     private static void DefineVisitor(StringBuilder writer, string baseName, List<string> types)
     {
-        writer.AppendLine("    public interface Visitor<T>");
+        writer.AppendLine("    public interface IVisitor<T>");
         writer.AppendLine("    {");
 
         foreach (string type in types)
@@ -77,7 +77,7 @@ public class GenerateAst
         writer.AppendLine();
         foreach (var field in fields)
         {
-            writer.AppendLine($"        private readonly {field};");
+            writer.AppendLine($"        public readonly {field};");
         }
         writer.AppendLine();
 
@@ -92,7 +92,7 @@ public class GenerateAst
         writer.AppendLine("        }");
 
         writer.AppendLine();
-        writer.AppendLine("        public override T Accept<T>(Visitor<T> visitor)");
+        writer.AppendLine("        public override T Accept<T>(IVisitor<T> visitor)");
         writer.AppendLine("        {");
         writer.AppendLine($"            return visitor.Visit{ToUpperFistLetter(className)}{ToUpperFistLetter(baseName)}(this);");
         writer.AppendLine("        }");
