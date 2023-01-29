@@ -33,6 +33,13 @@ public class GenerateAst
         writer.AppendLine("public abstract class " + baseName);
         writer.AppendLine("{");
         
+        DefineVisitor(writer, baseName, types);
+
+        writer.AppendLine();
+        writer.AppendLine("    public abstract T Accept<T>(Visitor<T> visitor);");
+        writer.AppendLine();
+        
+        // The AST classes.
         foreach (string type in types) {
             string className = type.Split(":")[0].Trim();
             string fields = type.Split(":")[1].Trim(); 
@@ -42,6 +49,20 @@ public class GenerateAst
         writer.AppendLine("}");
         
         File.WriteAllText(path, writer.ToString());
+    }
+
+    private static void DefineVisitor(StringBuilder writer, string baseName, List<string> types)
+    {
+        writer.AppendLine("    public interface Visitor<T>");
+        writer.AppendLine("    {");
+
+        foreach (string type in types)
+        {
+            string typeName = type.Split(":")[0].Trim();
+            writer.AppendLine($"        T Visit{ToUpperFistLetter(typeName)}{ToUpperFistLetter(baseName)}" +
+                              $"({typeName} {baseName.ToLower()});");
+        }
+        writer.AppendLine("    }");
     }
 
     private static void DefineType(StringBuilder writer, string baseName, string className, string fieldList)
@@ -70,6 +91,14 @@ public class GenerateAst
         }
         writer.AppendLine("        }");
 
+        writer.AppendLine();
+        writer.AppendLine("        public override T Accept<T>(Visitor<T> visitor)");
+        writer.AppendLine("        {");
+        writer.AppendLine($"            return visitor.Visit{ToUpperFistLetter(className)}{ToUpperFistLetter(baseName)}(this);");
+        writer.AppendLine("        }");
+
         writer.AppendLine("    }");
     }
+
+    private static string ToUpperFistLetter(string str) => char.ToUpper(str[0]) + str.Substring(1);
 }

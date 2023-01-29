@@ -2,6 +2,16 @@ namespace Lox_Interpreter;
 
 public abstract class Expr
 {
+    public interface Visitor<T>
+    {
+        T VisitBinaryExpr(Binary expr);
+        T VisitGroupingExpr(Grouping expr);
+        T VisitLiteralExpr(Literal expr);
+        T VisitUnaryExpr(Unary expr);
+    }
+
+    public abstract T Accept<T>(Visitor<T> visitor);
+
     public class Binary : Expr
     {
 
@@ -15,6 +25,11 @@ public abstract class Expr
             this.op = op;
             this.right = right;
         }
+
+        public override T Accept<T>(Visitor<T> visitor)
+        {
+            return visitor.VisitBinaryExpr(this);
+        }
     }
     public class Grouping : Expr
     {
@@ -25,6 +40,11 @@ public abstract class Expr
         {
             this.expression = expression;
         }
+
+        public override T Accept<T>(Visitor<T> visitor)
+        {
+            return visitor.VisitGroupingExpr(this);
+        }
     }
     public class Literal : Expr
     {
@@ -34,6 +54,11 @@ public abstract class Expr
         public Literal(Object value)
         {
             this.value = value;
+        }
+
+        public override T Accept<T>(Visitor<T> visitor)
+        {
+            return visitor.VisitLiteralExpr(this);
         }
     }
     public class Unary : Expr
@@ -46,6 +71,11 @@ public abstract class Expr
         {
             this.op = op;
             this.right = right;
+        }
+
+        public override T Accept<T>(Visitor<T> visitor)
+        {
+            return visitor.VisitUnaryExpr(this);
         }
     }
 }
